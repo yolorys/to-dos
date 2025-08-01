@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+</head>
+<body>
+    <h1>My Todo List</h1>
+
+    <div class="add-todo-form">
+        <h2>Add New Todo</h2>
+        <form id="new-todo-form">  <input type="text" id="title" placeholder="Title" required>
+            <input type="text" id="description" placeholder="Description">
+            <input type="date" id="dueDate" required>
+            <select id="priority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+            <button type="submit">Add Todo</button>
+        </form>
+    </div>
+
+    <div id="projects-container">
+        </div>
+    <div id="todos-container">
+        </div>
+</body>
+</html>

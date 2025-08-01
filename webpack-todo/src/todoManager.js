@@ -16,8 +16,13 @@ const createDefaultProject = () => {
     if (projects.length === 0) {
         const defaultProject = createProject('Default Project');
         projects.push(defaultProject);
+        return defaultProject; // < Return the newly created project
     }
+    // If a default project already exists, we should probably return it
+    // so we can get its ID.
+    return projects[0]; // Return the existing default project
 };
+
 
 // Function to add a new project.
 const addProject = (projectName) => {
