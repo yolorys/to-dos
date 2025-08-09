@@ -1,6 +1,8 @@
 // src/ui.js
 
-import { getProjects, addTodoToProject } from './todoManager.js';
+import { getProjects, addTodoToProject, addProject } from './todoManager.js';
+
+let selectedProjectId = null;
 
 // Function to render the list of projects
 const renderProjects = () => {
@@ -15,7 +17,18 @@ const renderProjects = () => {
         const projectDiv = document.createElement('div');
         projectDiv.textContent = project.name;
         projectDiv.classList.add('project-item');
-        // You might add a click event listener here later
+        projectDiv.dataset.id = project.id;
+
+        if (project.id === selectedProjectId) {
+            projectDiv.classList.add('selected'); // This will be used for styling
+        }
+
+        projectDiv.addEventListener('click', () => {
+            selectedProjectId = project.id; // Set the selected project's ID
+            renderProjects(); // Re-render the project list to update the highlight
+            renderTodos(project.id); // Render the todos for the newly selected project
+        });
+
         projectsContainer.appendChild(projectDiv);
     });
 };
@@ -50,18 +63,33 @@ const handleTodoForm = (e) => {
     const dueDate = form.elements['dueDate'].value;
     const priority = form.elements['priority'].value;
 
-    // For now, let's assume we're always adding to the default project (the first one in the array)
-    const defaultProjectId = getProjects()[0].id;
+    if (selectedProjectId) {
+        addTodoToProject(selectedProjectId, title, description, dueDate, priority);
+        renderTodos(selectedProjectId);
+        form.reset();
+    } else {
+        alert("Please select a project first!");
+    }
+};
 
-    // Call the todoManager to add the new todo
-    addTodoToProject(defaultProjectId, title, description, dueDate, priority);
+const handleProjectForm = (e) => {
+    e.preventDefault();
 
-    // Re-render the todos to show the new one
-    renderTodos(defaultProjectId);
+    const form = e.target;
+    const projectName = form.elements['project-name'].value;
+
+    // Call the todoManager to add the new project
+    addProject(projectName);
+    
+    // Re-render the projects list to show the new one
+    renderProjects();
 
     form.reset(); // Clear the form after submission
 };
 
 
-// Export the functions that will be used by other modules
-export { renderProjects, renderTodos, handleTodoForm };
+const setInitialProject = (projectId) => {
+    selectedProjectId = projectId;
+};
+
+export { renderProjects, renderTodos, handleTodoForm, handleProjectForm, setInitialProject };
