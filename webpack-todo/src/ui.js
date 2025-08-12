@@ -42,6 +42,7 @@ const renderTodos = (projectId) => {
     if (project) {
         project.todos.forEach(todo => {
             const todoDiv = document.createElement('div');
+            todoDiv.dataset.todoId = todo.id;
             todoDiv.innerHTML = `
                 <h3>${todo.title}</h3>
                 <p>Due: ${todo.dueDate}</p>
@@ -49,6 +50,14 @@ const renderTodos = (projectId) => {
                 <button class="delete-btn" data-todo-id="${todo.id}">Delete</button>
             `;
             todoDiv.classList.add('todo-item');
+
+            todoDiv.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('delete-btn')) {
+                    // Call a new function to render the detailed view
+                    renderTodoDetails(todo);
+                }
+            });
+
             todosContainer.appendChild(todoDiv);
         });
     }
@@ -102,4 +111,27 @@ const setInitialProject = (projectId) => {
     selectedProjectId = projectId;
 };
 
-export { renderProjects, renderTodos, handleTodoForm, handleProjectForm, setInitialProject };
+const renderTodoDetails = (todo) => {
+    const todosContainer = document.getElementById('todos-container');
+    
+    // Clear the current list of todos
+    todosContainer.innerHTML = '';
+    
+    const detailsDiv = document.createElement('div');
+    detailsDiv.innerHTML = `
+        <h2>Details for: ${todo.title}</h2>
+        <p><strong>Description:</strong> ${todo.description}</p>
+        <p><strong>Due Date:</strong> ${todo.dueDate}</p>
+        <p><strong>Priority:</strong> ${todo.priority}</p>
+        <button id="back-btn">Back to list</button>
+    `;
+    
+    todosContainer.appendChild(detailsDiv);
+
+    // Add a listener to the back button to return to the main list
+    document.getElementById('back-btn').addEventListener('click', () => {
+        renderTodos(selectedProjectId); // Re-render the main todo list for the current project
+    });
+};
+
+export { renderProjects, renderTodos, handleTodoForm, handleProjectForm, setInitialProject, renderTodoDetails };
