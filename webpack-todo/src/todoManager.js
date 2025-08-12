@@ -43,10 +43,24 @@ const addTodoToProject = (projectId, title, description, dueDate, priority) => {
     }
 };
 
+const deleteToDo = (todoId) => {
+    for (const project of projects) {
+        const todoIndex = project.todos.findIndex(todo => todo.id === todoId);
+        
+        if (todoIndex > -1) {
+            // Remove the todo from the array
+            project.todos.splice(todoIndex, 1);
+            return; // Exit the loop once the todo is found and deleted
+        }
+    }
+
+}
+
 // Export the functions that other modules need to interact with the data.
 export {
     getProjects,
     createDefaultProject,
     addProject,
-    addTodoToProject
+    addTodoToProject,
+    deleteToDo
 };

@@ -1,6 +1,6 @@
 // src/ui.js
 
-import { getProjects, addTodoToProject, addProject } from './todoManager.js';
+import { getProjects, addTodoToProject, addProject, deleteToDo } from './todoManager.js';
 
 let selectedProjectId = null;
 
@@ -46,11 +46,21 @@ const renderTodos = (projectId) => {
                 <h3>${todo.title}</h3>
                 <p>Due: ${todo.dueDate}</p>
                 <p>Priority: ${todo.priority}</p>
+                <button class="delete-btn" data-todo-id="${todo.id}">Delete</button>
             `;
             todoDiv.classList.add('todo-item');
             todosContainer.appendChild(todoDiv);
         });
     }
+
+    todosContainer.addEventListener('click', (e) => {
+        // Check if the clicked element is a delete button
+        if (e.target.classList.contains('delete-btn')) {
+            const todoId = e.target.dataset.todoId;
+            deleteToDo(todoId);
+            renderTodos(selectedProjectId); // Re-render the current project's todos
+        }
+    });
 };
 
 const handleTodoForm = (e) => {
