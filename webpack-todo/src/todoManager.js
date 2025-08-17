@@ -7,6 +7,26 @@ import { createTodo } from './todo.js';
 // This is a "private" variable inside the module.
 let projects = [];
 
+
+const saveData = () => {
+    localStorage.setItem('todo-projects', JSON.stringify(projects));
+};
+
+const loadData = () => {
+    const storedProjects = localStorage.getItem('todo-projects');
+    if (storedProjects) {
+        // You cannot store functions, so we get plain objects.
+        // We'll need to figure out how to handle that later.
+        projects = JSON.parse(storedProjects);
+        // We need to re-attach the 'todos' array, if it was lost during stringify
+        projects.forEach(project => {
+            if (!project.todos) {
+                project.todos = [];
+            }
+        });
+    }
+};
+
 // Function to get all projects for other modules to use.
 const getProjects = () => projects;
 
@@ -16,6 +36,7 @@ const createDefaultProject = () => {
     if (projects.length === 0) {
         const defaultProject = createProject('Default Project');
         projects.push(defaultProject);
+        saveData();
         return defaultProject; // < Return the newly created project
     }
     // If a default project already exists, we should probably return it
@@ -28,6 +49,7 @@ const createDefaultProject = () => {
 const addProject = (projectName) => {
     const newProject = createProject(projectName);
     projects.push(newProject);
+    saveData();
 };
 
 // Function to add a new todo to a specific project.
@@ -38,6 +60,7 @@ const addTodoToProject = (projectId, title, description, dueDate, priority) => {
     if (project) {
         const newTodo = createTodo(title, description, dueDate, priority, projectId);
         project.todos.push(newTodo);
+        saveData();
     } else {
         console.error('Project not found!');
     }
@@ -50,6 +73,7 @@ const deleteToDo = (todoId) => {
         if (todoIndex > -1) {
             // Remove the todo from the array
             project.todos.splice(todoIndex, 1);
+            saveData();
             return; // Exit the loop once the todo is found and deleted
         }
     }
@@ -67,6 +91,7 @@ const updateTodo = (updatedTodo) => {
         if (todoIndex > -1) {
             // Replace the old todo object with the updated one
             project.todos[todoIndex] = updatedTodo;
+            saveData();
         } else {
             console.error('Todo not found for update.');
         }
@@ -82,5 +107,6 @@ export {
     addProject,
     addTodoToProject,
     deleteToDo,
-    updateTodo
+    updateTodo,
+    loadData
 };

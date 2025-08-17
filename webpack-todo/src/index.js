@@ -1,11 +1,12 @@
 // src/index.js
 
-import { createDefaultProject } from './todoManager.js';
+import { createDefaultProject, loadData } from './todoManager.js';
 import { renderProjects, renderTodos, handleTodoForm, handleProjectForm, setInitialProject } from './ui.js'; // <-- NEW: import renderTodos and handleTodoForm
 import './styles.css';
 
 const initializeApp = () => {
     console.log("Initializing Todo List App...");
+    loadData();
 
     const defaultProject = createDefaultProject();
 
