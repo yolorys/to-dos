@@ -1,7 +1,7 @@
 // src/ui.js
 import { format } from 'date-fns';
 
-import { getProjects, addTodoToProject, addProject, deleteToDo, updateTodo, getAllTodos } from './todoManager.js';
+import { getProjects, addTodoToProject, addProject, deleteToDo, updateTodo, getAllTodos, deleteProject } from './todoManager.js';
 
 let selectedProjectId = null;
 
@@ -29,6 +29,11 @@ const renderProjects = () => {
     projects.forEach(project => {
         const projectDiv = document.createElement('div');
         projectDiv.textContent = project.name;
+        const project_del_btn = document.createElement('button');
+        project_del_btn.textContent = "Delete Project";
+        project_del_btn.classList.add("delete-btn");
+        project_del_btn.dataset.id = project.id;
+        projectDiv.appendChild(project_del_btn);
         projectDiv.classList.add('project-item');
         projectDiv.dataset.id = project.id;
 
@@ -43,6 +48,15 @@ const renderProjects = () => {
         });
 
         projectsContainer.appendChild(projectDiv);
+    });
+
+    projectsContainer.addEventListener('click', (e) => {
+        // Check if the clicked element is a delete button
+        if (e.target.classList.contains('delete-btn')) {
+            const projectId = e.target.dataset.id;
+            deleteProject(projectId);
+            renderProjects();
+        }
     });
 };
 

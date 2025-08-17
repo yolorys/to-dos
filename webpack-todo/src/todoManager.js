@@ -108,6 +108,18 @@ const updateTodo = (updatedTodo) => {
     }
 };
 
+
+const deleteProject = (projectId) => {
+    const projectIndex = projects.findIndex(p => p.id === projectId);
+    
+    if (projectIndex > -1) {
+        // Remove the todo from the array
+        projects.splice(projectIndex, 1);
+        saveData();
+        return; // Exit the loop once the todo is found and deleted
+    }
+}
+
 // Export the functions that other modules need to interact with the data.
 export {
     getProjects,
@@ -117,5 +129,6 @@ export {
     deleteToDo,
     updateTodo,
     loadData,
-    getAllTodos
+    getAllTodos,
+    deleteProject
 };
