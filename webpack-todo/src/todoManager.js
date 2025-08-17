@@ -56,11 +56,31 @@ const deleteToDo = (todoId) => {
 
 }
 
+const updateTodo = (updatedTodo) => {
+    // Find the project the todo belongs to
+    const project = projects.find(p => p.id === updatedTodo.projectId);
+    
+    if (project) {
+        // Find the index of the todo in that project's todos array
+        const todoIndex = project.todos.findIndex(t => t.id === updatedTodo.id);
+        
+        if (todoIndex > -1) {
+            // Replace the old todo object with the updated one
+            project.todos[todoIndex] = updatedTodo;
+        } else {
+            console.error('Todo not found for update.');
+        }
+    } else {
+        console.error('Project not found for todo update.');
+    }
+};
+
 // Export the functions that other modules need to interact with the data.
 export {
     getProjects,
     createDefaultProject,
     addProject,
     addTodoToProject,
-    deleteToDo
+    deleteToDo,
+    updateTodo
 };

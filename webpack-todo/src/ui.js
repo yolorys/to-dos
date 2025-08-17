@@ -1,6 +1,6 @@
 // src/ui.js
 
-import { getProjects, addTodoToProject, addProject, deleteToDo } from './todoManager.js';
+import { getProjects, addTodoToProject, addProject, deleteToDo, updateTodo } from './todoManager.js';
 
 let selectedProjectId = null;
 
@@ -117,20 +117,45 @@ const renderTodoDetails = (todo) => {
     // Clear the current list of todos
     todosContainer.innerHTML = '';
     
-    const detailsDiv = document.createElement('div');
-    detailsDiv.innerHTML = `
-        <h2>Details for: ${todo.title}</h2>
-        <p><strong>Description:</strong> ${todo.description}</p>
-        <p><strong>Due Date:</strong> ${todo.dueDate}</p>
-        <p><strong>Priority:</strong> ${todo.priority}</p>
-        <button id="back-btn">Back to list</button>
+    const detailsForm = document.createElement('form');
+    detailsForm.id = 'edit-todo-form';
+    detailsForm.innerHTML = `
+        <h2>Edit Todo</h2>
+        <input type="text" id="edit-title" value="${todo.title}" required>
+        <input type="text" id="edit-description" value="${todo.description}">
+        <input type="date" id="edit-dueDate" value="${todo.dueDate}" required>
+        <select id="edit-priority">
+            <option value="low" ${todo.priority === 'low' ? 'selected' : ''}>Low</option>
+            <option value="medium" ${todo.priority === 'medium' ? 'selected' : ''}>Medium</option>
+            <option value="high" ${todo.priority === 'high' ? 'selected' : ''}>High</option>
+        </select>
+        <button type="submit">Save</button>
+        <button type="button" id="cancel-edit">Cancel</button>
     `;
-    
-    todosContainer.appendChild(detailsDiv);
 
-    // Add a listener to the back button to return to the main list
-    document.getElementById('back-btn').addEventListener('click', () => {
-        renderTodos(selectedProjectId); // Re-render the main todo list for the current project
+    todosContainer.appendChild(detailsForm);
+
+    detailsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const updatedTodo = {
+            id: todo.id,
+            title: document.getElementById('edit-title').value,
+            description: document.getElementById('edit-description').value,
+            dueDate: document.getElementById('edit-dueDate').value,
+            priority: document.getElementById('edit-priority').value,
+            projectId: todo.projectId,
+        };
+        
+        // Call the manager to update the todo
+        updateTodo(updatedTodo);
+        
+        // Re-render the todo list to show the updated details
+        renderTodos(todo.projectId);
+    });
+
+    document.getElementById('cancel-edit').addEventListener('click', () => {
+        renderTodos(todo.projectId);
     });
 };
 
