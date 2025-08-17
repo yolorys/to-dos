@@ -7,6 +7,14 @@ import { createTodo } from './todo.js';
 // This is a "private" variable inside the module.
 let projects = [];
 
+const getAllTodos = () => {
+    let allTodos = [];
+    projects.forEach(project => {
+        allTodos = allTodos.concat(project.todos);
+    });
+    return allTodos;
+};
+
 
 const saveData = () => {
     localStorage.setItem('todo-projects', JSON.stringify(projects));
@@ -108,5 +116,6 @@ export {
     addTodoToProject,
     deleteToDo,
     updateTodo,
-    loadData
+    loadData,
+    getAllTodos
 };

@@ -1,6 +1,7 @@
 // src/ui.js
+import { format } from 'date-fns';
 
-import { getProjects, addTodoToProject, addProject, deleteToDo, updateTodo } from './todoManager.js';
+import { getProjects, addTodoToProject, addProject, deleteToDo, updateTodo, getAllTodos } from './todoManager.js';
 
 let selectedProjectId = null;
 
@@ -11,6 +12,18 @@ const renderProjects = () => {
 
     // Clear existing projects to prevent duplicates on re-render
     projectsContainer.innerHTML = '';
+
+    const allTodosDiv = document.createElement('div');
+    allTodosDiv.textContent = 'Inbox';
+    allTodosDiv.classList.add('project-item', 'inbox');
+    projectsContainer.appendChild(allTodosDiv);
+
+    allTodosDiv.addEventListener('click', () => {
+        // Set a special ID or just pass a value to indicate "all todos"
+        selectedProjectId = 'inbox';
+        renderProjects(); // Re-render to update highlight
+        renderTodos(selectedProjectId); // Render all todos
+    });
 
     // Create and append a div for each project
     projects.forEach(project => {
@@ -34,33 +47,47 @@ const renderProjects = () => {
 };
 
 const renderTodos = (projectId) => {
-    const projects = getProjects();
-    const project = projects.find(p => p.id === projectId);
+
+    let todos = [];
     const todosContainer = document.getElementById('todos-container');
-    todosContainer.innerHTML = ''; // Clear existing todos
+    todosContainer.innerHTML = '';
 
-    if (project) {
-        project.todos.forEach(todo => {
-            const todoDiv = document.createElement('div');
-            todoDiv.dataset.todoId = todo.id;
-            todoDiv.innerHTML = `
-                <h3>${todo.title}</h3>
-                <p>Due: ${todo.dueDate}</p>
-                <p>Priority: ${todo.priority}</p>
-                <button class="delete-btn" data-todo-id="${todo.id}">Delete</button>
-            `;
-            todoDiv.classList.add('todo-item');
-
-            todoDiv.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('delete-btn')) {
-                    // Call a new function to render the detailed view
-                    renderTodoDetails(todo);
-                }
-            });
-
-            todosContainer.appendChild(todoDiv);
-        });
+    if (projectId === 'inbox') {
+        todos = getAllTodos();
+    } else {
+        const project = getProjects().find(p => p.id === projectId);
+        if (project) {
+            todos = project.todos;
+        } else {
+            console.error('Project not found!');
+            return;
+        }
     }
+
+    todos.forEach(todo => {
+        const todoDiv = document.createElement('div');
+        todoDiv.dataset.todoId = todo.id;
+
+        const formattedDate = format(new Date(`${todo.dueDate}T12:00:00`), 'MMM dd, yyyy');
+
+        todoDiv.innerHTML = `
+            <h3>${todo.title}</h3>
+            <p>Due: ${formattedDate}</p>
+            <p>Priority: ${todo.priority}</p>
+            <button class="delete-btn" data-todo-id="${todo.id}">Delete</button>
+        `;
+
+        todoDiv.classList.add('todo-item');
+
+        todoDiv.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('delete-btn')) {
+                // Call a new function to render the detailed view
+                renderTodoDetails(todo);
+            }
+        });
+
+        todosContainer.appendChild(todoDiv);
+    });
 
     todosContainer.addEventListener('click', (e) => {
         // Check if the clicked element is a delete button
